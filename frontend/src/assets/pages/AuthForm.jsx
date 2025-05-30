@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
 export default function AuthForm({ mode, onClose, onSuccess }) {
-  const [form, setForm] = useState({ username: "", password: "", role: "" });
-  const [error, setError] = useState("");
+  const [form, setForm] = useState({ username: '', password: '', role: '' });
+  const [error, setError] = useState('');
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     const { username, email, password, passwordConfirm, role } = form;
@@ -17,17 +17,18 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
       !email ||
       !password ||
       !passwordConfirm ||
-      (mode === "signup" && !role)
+      (mode === 'signup' && !role)
     ) {
-      setError("Please fill in all fields.");
+      setError('Please fill in all fields.');
       return;
     }
 
     try {
-      if (mode === "signup") {
-        const response = await fetch("http://10.56.92.1:3000/users/signup", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+      if (mode === 'signup') {
+        const response = await fetch('http://10.56.92.1:3000/users/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
           body: JSON.stringify({
             name: username,
             email,
@@ -37,22 +38,22 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
           }),
         });
 
-        if (!response.ok) throw new Error("Signup failed");
+        if (!response.ok) throw new Error('Signup failed');
 
         const result = await response.json();
-        console.log("Signup successful:", result);
+        console.log('Signup successful:', result);
         onSuccess();
       } else {
-        const response = await fetch("http://10.56.92.1:3000/users/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
+        const response = await fetch('http://10.56.92.1:3000/users/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),
         });
 
-        if (!response.ok) throw new Error("Login failed");
+        if (!response.ok) throw new Error('Login failed');
 
         const result = await response.json();
-        localStorage.setItem("user", JSON.stringify(result));
+        localStorage.setItem('user', JSON.stringify(result));
         onSuccess();
       }
     } catch (err) {
@@ -67,10 +68,10 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
         className="bg-[#1a1a2e] p-6 rounded-lg w-[90%] max-w-md shadow-xl"
       >
         <h2 className="text-2xl text-center font-bold text-[#00ffff] mb-4">
-          {mode === "signup" ? "Sign Up" : "Sign In"}
+          {mode === 'signup' ? 'Sign Up' : 'Sign In'}
         </h2>
 
-        {mode === "signup" && (
+        {mode === 'signup' && (
           <input
             type="text"
             name="username"
@@ -100,7 +101,7 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
           className="w-full mb-3 p-2 rounded bg-[#0f0f1a] text-white border border-[#00ffff] focus:outline-none focus:ring-2 focus:ring-[#00ffff]"
           required
         />
-        {mode === "signup" && (
+        {mode === 'signup' && (
           <input
             type="password"
             name="passwordConfirm"
@@ -112,7 +113,7 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
           />
         )}
 
-        {mode === "signup" && (
+        {mode === 'signup' && (
           <select
             name="role"
             value={form.role}
@@ -133,7 +134,7 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
           type="submit"
           className="w-full py-2 px-4 bg-[#ff00ff] text-white rounded font-semibold hover:bg-pink-600"
         >
-          {mode === "signup" ? "Sign Up" : "Sign In"}
+          {mode === 'signup' ? 'Sign Up' : 'Sign In'}
         </button>
 
         <button
