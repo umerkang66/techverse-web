@@ -4,6 +4,7 @@ import Hero from './assets/components/Hero.jsx';
 import Features from './assets/components/Features.jsx';
 import Footer from './assets/components/Footer.jsx';
 import AuthForm from './assets/pages/AuthForm.jsx';
+import axios from 'axios';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -11,14 +12,10 @@ function App() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await fetch('http://10.56.92.1:3000/users/me', {
-        method: 'GET',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+      const response = await axios.get('http://10.56.92.1:3000/users/me', {
+        withCredentials: true,
       });
-
-      const data = await response.json();
-      console.log(data);
+      console.log(response);
     };
 
     fetchUser();

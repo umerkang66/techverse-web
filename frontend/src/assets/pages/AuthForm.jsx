@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React, { useState } from 'react';
 
 export default function AuthForm({ mode, onClose, onSuccess }) {
@@ -25,23 +26,21 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
 
     try {
       if (mode === 'signup') {
-        const response = await fetch('http://10.56.92.1:3000/users/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
+        const response = await axios.post(
+          'http://10.56.92.1:3000/users/signup',
+          {
             name: username,
             email,
             password,
             passwordConfirm,
             role,
-          }),
-        });
+          },
+          {
+            withCredentials: true,
+          }
+        );
 
-        if (!response.ok) throw new Error('Signup failed');
-
-        const result = await response.json();
-        console.log('Signup successful:', result);
+        console.log('Signup successful:', response);
         onSuccess();
       } else {
         const response = await fetch('http://10.56.92.1:3000/users/login', {
