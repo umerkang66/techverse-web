@@ -27,7 +27,7 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
     try {
       if (mode === 'signup') {
         const response = await axios.post(
-          'http://10.56.92.1:3000/users/signup',
+          'http://localhost:3000/users/signup',
           {
             name: username,
             email,
@@ -43,7 +43,7 @@ export default function AuthForm({ mode, onClose, onSuccess }) {
         console.log('Signup successful:', response);
         onSuccess();
       } else {
-        const response = await fetch('http://10.56.92.1:3000/users/login', {
+        const response = await fetch('http://localhost:3000/users/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password }),

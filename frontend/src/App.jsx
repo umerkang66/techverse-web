@@ -12,7 +12,7 @@ function App() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      const response = await axios.get('http://10.56.92.1:3000/users/me', {
+      const response = await axios.get('http://localhost:3000/users/me', {
         withCredentials: true,
       });
       console.log(response);
