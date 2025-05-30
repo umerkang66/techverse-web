@@ -1,22 +1,50 @@
-import Navbar from "../src/assets/components/Navbar.jsx";
-import ParticlesBackground from "../src//assets/components/ParticlesBackground.jsx";
-import Hero from "../src/assets/components/Hero.jsx";
-import Features from "../src/assets/components/Features.jsx";
-import Footer from "../src/assets/components/Footer.jsx";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Navbar from "./assets/components/Navbar.jsx";
+import Hero from "./assets/components/Hero.jsx";
+import Features from "./assets/components/Features.jsx";
+import Footer from "./assets/components/Footer.jsx";
+import AuthForm from "./assets/pages/AuthForm.jsx";
+
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [authMode, setAuthMode] = useState(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const response = await fetch("http://10.56.92.1:3000/users/me", {
+        method: "GET",
+        headers: { "Content-Type": "application/json" },
+      });
+
+      const data = await response.json();
+      console.log(data);
+    };
+
+    fetchUser();
+  }, []);
+
   return (
-    <>
-      <div className="relative min-h-screen text-[#f0f0f0]">
-        <ParticlesBackground />
-        <div className="relative z-10 ">
-          <Navbar />
-          <Hero />
-          <Features />
-          <Footer />
-        </div>
-      </div>
-    </>
+    <div className="bg-[#0f0f1a] min-h-screen text-white">
+      <>
+        <Navbar
+          onSignIn={() => setAuthMode("signin")}
+          onSignUp={() => setAuthMode("signup")}
+        />
+        <Hero />
+        <Features />
+        <Footer />
+        {authMode && (
+          <AuthForm
+            mode={authMode}
+            onClose={() => setAuthMode(null)}
+            onSuccess={() => {
+              setIsLoggedIn(true);
+              setAuthMode(null);
+            }}
+          />
+        )}
+      </>
+    </div>
   );
 }
 

@@ -1,14 +1,14 @@
 import React, { useState } from "react";
 
 const colors = {
-  primary: "#00ffff", // cyan
-  secondary: "#ff00ff", // magenta
+  primary: "#00ffff",
+  secondary: "#ff00ff",
   dark: "#0f0f1a",
   darker: "#0a0a12",
   light: "#f0f0f0",
 };
 
-export default function Navbar() {
+export default function Navbar({ onSignIn, onSignUp }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -45,7 +45,7 @@ export default function Navbar() {
             backgroundColor: colors.primary,
             color: colors.darker,
           }}
-          onClick={() => alert("Login clicked")}
+          onClick={onSignIn}
           onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
           onMouseLeave={(e) => (e.target.style.opacity = 1)}
         >
@@ -57,7 +57,7 @@ export default function Navbar() {
             backgroundColor: colors.secondary,
             color: colors.darker,
           }}
-          onClick={() => alert("Signup clicked")}
+          onClick={onSignUp}
           onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
           onMouseLeave={(e) => (e.target.style.opacity = 1)}
         >
@@ -94,7 +94,7 @@ export default function Navbar() {
       {/* Mobile menu */}
       {menuOpen && (
         <div
-          className="absolute top-full left-0 w-full bg-[#0a0a12] flex flex-col items-center py-4 space-y-4 md:hidden"
+          className="absolute top-full left-0 w-full bg-[#0a0a12] flex flex-col items-center py-4 space-y-4 md:hidden "
           style={{ backgroundColor: colors.darker }}
         >
           <ul className="flex flex-col items-center space-y-3 text-light font-semibold">
