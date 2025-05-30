@@ -4,6 +4,7 @@ const cookieParser = require('cookie-parser');
 
 const AppError = require('./utils/app-error');
 const userRouter = require('./routes/user');
+const lostItemRouter = require('./routes/lost-item');
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.use('/users', userRouter);
+app.use('/lost-item', lostItemRouter);
 
 app.use((err, req, res, next) => {
   if (err instanceof AppError) {
