@@ -2,13 +2,13 @@ import React, { useState } from "react";
 
 const colors = {
   primary: "#00ffff",
-  secondary: "#ff00ff", 
+  secondary: "#ff00ff",
   dark: "#0f0f1a",
   darker: "#0a0a12",
   light: "#f0f0f0",
 };
 
-export default function Navbar() {
+export default function Navbar({ onSignIn, onSignUp }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -45,7 +45,7 @@ export default function Navbar() {
             backgroundColor: colors.primary,
             color: colors.darker,
           }}
-          onClick={() => alert("Login clicked")}
+          onClick={onSignIn}
           onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
           onMouseLeave={(e) => (e.target.style.opacity = 1)}
         >
@@ -57,7 +57,7 @@ export default function Navbar() {
             backgroundColor: colors.secondary,
             color: colors.darker,
           }}
-          onClick={() => alert("Signup clicked")}
+          onClick={onSignUp}
           onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
           onMouseLeave={(e) => (e.target.style.opacity = 1)}
         >
