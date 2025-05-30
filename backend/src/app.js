@@ -1,18 +1,19 @@
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+
 const AppError = require('./utils/app-error');
+const userRouter = require('./routes/user');
 
 const app = express();
 
 app.use(cors());
 app.use(cookieParser());
+app.use(express.json());
 
-app.get('/umer', (req, res) => {
-  res.send('umer did this');
-});
+app.use('/users', userRouter);
 
-app.use((err, req, res) => {
+app.use((err, req, res, next) => {
   if (err instanceof AppError) {
     return res.status(err.statusCode).json({
       status: err.status,
