@@ -9,6 +9,7 @@ import LostItem from './pages/LostItem.jsx';
 import FoundItem from './pages/FoundItem.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import axios from 'axios';
+import Chat from './pages/Chat.jsx';
 
 function App() {
   const [_, setIsLoggedIn] = useState(false);
@@ -73,6 +74,7 @@ function App() {
               path="/found-items"
               element={<FoundItem currentUser={currentUser} />}
             />
+            <Route path="/chat" element={<Chat />} />
             <Route
               path="/dashboard"
               element={

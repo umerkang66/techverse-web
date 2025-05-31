@@ -1,6 +1,8 @@
+const http = require('http');
 const express = require('express');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+const { Server } = require('socket.io');
 
 const AppError = require('./utils/app-error');
 const userRouter = require('./routes/user');
@@ -33,4 +35,36 @@ app.use((err, req, res, next) => {
   });
 });
 
-module.exports = app;
+const server = http.createServer(app);
+
+const io = new Server(server, {
+  cors: {
+    origin: '*', // update for security
+  },
+});
+
+io.on('connection', socket => {
+  console.log('User connected:', socket.id);
+
+  // Join user to their unique room
+  socket.on('join', userId => {
+    socket.join(userId);
+  });
+
+  // Handle private messages
+  socket.on('private_message', async ({ from, to, message }) => {
+    io.to(to).emit('private_message', { from, message });
+    console.log({ from, to, message });
+    await Message.create({ from, to, message });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
+});
+
+server.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+
+module.exports = server;
