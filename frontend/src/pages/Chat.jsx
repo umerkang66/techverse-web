@@ -23,7 +23,7 @@ export default function ChatPage() {
     return () => {
       socket.off('private_message');
     };
-  }, [sender]);
+  }, [sender, receiver]);
 
   const sendMessage = () => {
     if (!message.trim()) return;
