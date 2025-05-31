@@ -5,15 +5,7 @@ import ReturnBts from "../components/ReturnBtn";
 import ReturnBtn from "../components/ReturnBtn";
 export default function FoundItem({ currentUser }) {
   const [showModal, setShowModal] = useState(false);
-  const [foundItems, setFoundItems] = useState([
-    {
-      name: "Sample Item",
-      category: "Electronics",
-      image: null,
-      description: "Sample description",
-      location: "Campus",
-    },
-  ]);
+  const [foundItems, setFoundItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
   const [filter, setFilter] = useState({
