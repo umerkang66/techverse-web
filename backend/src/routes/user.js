@@ -13,5 +13,6 @@ router.get(
   authController.logout
 );
 router.get('/me', authController.me);
+router.get('/namebyid/:id', authController.userNameById);
 
 module.exports = router;

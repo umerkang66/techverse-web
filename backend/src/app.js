@@ -8,6 +8,7 @@ const AppError = require('./utils/app-error');
 const userRouter = require('./routes/user');
 const lostItemRouter = require('./routes/lost-item');
 const foundItemRouter = require('./routes/found-item');
+const Message = require('./models/message');
 
 const app = express();
 
@@ -58,13 +59,23 @@ io.on('connection', socket => {
     await Message.create({ from, to, message });
   });
 
+  socket.on('get_messages', async ({ from, to }) => {
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+
+    const messages = await Message.find({
+      $or: [
+        { from, to },
+        { from: to, to: from },
+      ],
+    }).sort({ timestamp: 1 });
+
+    socket.emit('chat_history', messages);
+  });
+
   socket.on('disconnect', () => {
     console.log('User disconnected:', socket.id);
   });
-});
-
-server.listen(3000, () => {
-  console.log('Server running on port 3000');
 });
 
 module.exports = server;

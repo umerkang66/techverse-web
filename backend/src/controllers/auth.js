@@ -33,6 +33,11 @@ const createSendToken = (user, statusCode, req, res) => {
   });
 };
 
+exports.userNameById = async (req, res, next) => {
+  const user = await User.findById(req.params.id).select('name');
+  res.send({ user });
+};
+
 exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
