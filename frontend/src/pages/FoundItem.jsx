@@ -1,24 +1,37 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { BiChat } from 'react-icons/bi';
-import ReturnBts from '../components/ReturnBtn';
-import ReturnBtn from '../components/ReturnBtn';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { BiChat } from "react-icons/bi";
+import ReturnBts from "../components/ReturnBtn";
+import ReturnBtn from "../components/ReturnBtn";
 export default function FoundItem({ currentUser }) {
   const [showModal, setShowModal] = useState(false);
-  const [foundItems, setFoundItems] = useState([]);
+  const [foundItems, setFoundItems] = useState([
+    {
+      name: "Sample Item",
+      category: "Electronics",
+      image: null,
+      description: "Sample description",
+      location: "Campus",
+    },
+  ]);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
+  const [filter, setFilter] = useState({
+    name: "",
+    category: "",
+    location: "",
+  });
 
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
+    name: "",
+    category: "",
     image: null,
-    description: '',
-    location: '',
+    description: "",
+    location: "",
   });
 
   const fetchFoundItems = async () => {
-    const response = await axios.get('http://localhost:3000/found-item');
+    const response = await axios.get("http://localhost:3000/found-item");
     setFoundItems(response.data.data);
   };
 
@@ -26,7 +39,7 @@ export default function FoundItem({ currentUser }) {
     fetchFoundItems();
   }, []);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -34,7 +47,7 @@ export default function FoundItem({ currentUser }) {
     });
   };
 
-  const handleImageChange = e => {
+  const handleImageChange = (e) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -46,22 +59,22 @@ export default function FoundItem({ currentUser }) {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setFormData({
-      name: '',
-      category: '',
+      name: "",
+      category: "",
       image: null,
-      description: '',
-      location: '',
+      description: "",
+      location: "",
     });
 
     const newItem = { ...formData, image };
 
     setLoading(true);
     const response = await axios.post(
-      'http://localhost:3000/found-item',
+      "http://localhost:3000/found-item",
       { ...newItem },
       { withCredentials: true }
     );
@@ -71,6 +84,20 @@ export default function FoundItem({ currentUser }) {
 
     setShowModal(false);
   };
+
+  // Filtered found items based on filter state
+  const filteredItems = foundItems.filter((item) => {
+    const nameMatch = item.name
+      .toLowerCase()
+      .includes(filter.name.toLowerCase());
+    const categoryMatch = item.category
+      .toLowerCase()
+      .includes(filter.category.toLowerCase());
+    const locationMatch = item.location
+      .toLowerCase()
+      .includes(filter.location.toLowerCase());
+    return nameMatch && categoryMatch && locationMatch;
+  });
 
   return (
     <div className="min-h-screen bg-[#0f0f1a] text-white py-10 px-4">
@@ -84,9 +111,38 @@ export default function FoundItem({ currentUser }) {
         </button>
       </div>
 
+      {/* Filter Inputs */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 max-w-6xl mx-auto">
+        <input
+          type="text"
+          placeholder="Filter by Name"
+          value={filter.name}
+          onChange={(e) => setFilter((f) => ({ ...f, name: e.target.value }))}
+          className="px-3 py-2 rounded bg-[#0f0f1a] text-white w-full sm:w-1/3 border border-[#00ffff] focus:outline-none focus:ring-2 focus:ring-[#00ffff]"
+        />
+        <input
+          type="text"
+          placeholder="Filter by Category"
+          value={filter.category}
+          onChange={(e) =>
+            setFilter((f) => ({ ...f, category: e.target.value }))
+          }
+          className="px-3 py-2 rounded bg-[#0f0f1a] text-white w-full sm:w-1/3 border border-[#00ffff] focus:outline-none focus:ring-2 focus:ring-[#00ffff]"
+        />
+        <input
+          type="text"
+          placeholder="Filter by Location"
+          value={filter.location}
+          onChange={(e) =>
+            setFilter((f) => ({ ...f, location: e.target.value }))
+          }
+          className="px-3 py-2 rounded bg-[#0f0f1a] text-white w-full sm:w-1/3 border border-[#00ffff] focus:outline-none focus:ring-2 focus:ring-[#00ffff]"
+        />
+      </div>
+
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {foundItems.map(item => (
+        {filteredItems.map((item) => (
           <div
             key={item._id}
             className="bg-[#1f1f2e] p-4 rounded-lg shadow relative"
@@ -197,7 +253,7 @@ export default function FoundItem({ currentUser }) {
                   type="submit"
                   className="px-4 py-2 text-black bg-[#00ffff] rounded hover:bg-[#ff00ff]"
                 >
-                  {loading ? '...' : 'Post Item'}
+                  {loading ? "..." : "Post Item"}
                 </button>
               </div>
             </form>

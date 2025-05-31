@@ -1,25 +1,30 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { BiChat } from 'react-icons/bi';
-import FoundBtn from '../components/FoundBtn';
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { BiChat } from "react-icons/bi";
+import FoundBtn from "../components/FoundBtn";
 export default function LostItem({ currentUser }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [lostItems, setLostItems] = useState([]);
   const [image, setImage] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    dateLost: '',
+    name: "",
+    category: "",
+    dateLost: "",
     image: null,
-    description: '',
-    location: '',
+    description: "",
+    location: "",
+  });
+  const [filter, setFilter] = useState({
+    name: "",
+    category: "",
+    location: "",
   });
 
   console.log(lostItems);
 
   const fetchLostItems = async () => {
-    const response = await axios.get('http://localhost:3000/lost-item');
+    const response = await axios.get("http://localhost:3000/lost-item");
     setLostItems(response.data.data);
   };
 
@@ -27,16 +32,16 @@ export default function LostItem({ currentUser }) {
     fetchLostItems();
   }, []);
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleImageChange = e => {
+  const handleImageChange = (e) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -51,22 +56,22 @@ export default function LostItem({ currentUser }) {
   console.log(currentUser);
   console.log(lostItems);
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setFormData({
-      name: '',
-      category: '',
-      dateLost: '',
+      name: "",
+      category: "",
+      dateLost: "",
       image: null,
-      description: '',
-      location: '',
+      description: "",
+      location: "",
     });
 
     const newItem = { ...formData, image };
 
     setLoading(true);
     const response = await axios.post(
-      'http://localhost:3000/lost-item',
+      "http://localhost:3000/lost-item",
       { ...newItem },
       { withCredentials: true }
     );
@@ -76,6 +81,20 @@ export default function LostItem({ currentUser }) {
 
     setModalOpen(false);
   };
+
+  // Filtered lost items based on filter state
+  const filteredItems = lostItems.filter((item) => {
+    const nameMatch = item.name
+      .toLowerCase()
+      .includes(filter.name.toLowerCase());
+    const categoryMatch = item.category
+      .toLowerCase()
+      .includes(filter.category.toLowerCase());
+    const locationMatch = item.location
+      .toLowerCase()
+      .includes(filter.location.toLowerCase());
+    return nameMatch && categoryMatch && locationMatch;
+  });
 
   return (
     <div className="min-h-screen p-6 py-10 px-4 text-white">
@@ -89,9 +108,38 @@ export default function LostItem({ currentUser }) {
         </button>
       </div>
 
+      {/* Filter Inputs */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6 max-w-6xl mx-auto">
+        <input
+          type="text"
+          placeholder="Filter by Name"
+          value={filter.name}
+          onChange={(e) => setFilter((f) => ({ ...f, name: e.target.value }))}
+          className="px-3 py-2 rounded bg-[#0f0f1a] text-white w-full sm:w-1/3 border border-[#00ffff] focus:outline-none focus:ring-2 focus:ring-[#00ffff]"
+        />
+        <input
+          type="text"
+          placeholder="Filter by Category"
+          value={filter.category}
+          onChange={(e) =>
+            setFilter((f) => ({ ...f, category: e.target.value }))
+          }
+          className="px-3 py-2 rounded bg-[#0f0f1a] text-white w-full sm:w-1/3 border border-[#00ffff] focus:outline-none focus:ring-2 focus:ring-[#00ffff]"
+        />
+        <input
+          type="text"
+          placeholder="Filter by Location"
+          value={filter.location}
+          onChange={(e) =>
+            setFilter((f) => ({ ...f, location: e.target.value }))
+          }
+          className="px-3 py-2 rounded bg-[#0f0f1a] text-white w-full sm:w-1/3 border border-[#00ffff] focus:outline-none focus:ring-2 focus:ring-[#00ffff]"
+        />
+      </div>
+
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {lostItems.map(item => (
+        {filteredItems.map((item) => (
           <div
             key={item._id}
             className="bg-[#1f1f2e] p-4 rounded-lg shadow relative"
@@ -203,7 +251,7 @@ export default function LostItem({ currentUser }) {
                 type="submit"
                 className="w-full bg-[#00ffff] text-black font-semibold py-2 rounded hover:bg-[#ff00ff]"
               >
-                {!loading ? 'Submit' : '...'}
+                {!loading ? "Submit" : "..."}
               </button>
             </form>
           </div>
