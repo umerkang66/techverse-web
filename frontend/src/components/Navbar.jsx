@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const colors = {
-  primary: '#00ffff',
-  secondary: '#ff00ff',
-  dark: '#0f0f1a',
-  darker: '#0a0a12',
-  light: '#f0f0f0',
+  primary: "#00ffff",
+  secondary: "#ff00ff",
+  dark: "#0f0f1a",
+  darker: "#0a0a12",
+  light: "#f0f0f0",
 };
 
 export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   let navLinks = [
-    { name: 'Lost Items', path: '/lost-items' },
-    { name: 'Found Items', path: '/found-items' },
+    { name: "Lost Items", path: "/lost-items" },
+    { name: "Found Items", path: "/found-items" },
   ];
 
-  if (currentUser && currentUser.role === 'admin') {
+  if (currentUser && currentUser.role === "admin") {
     navLinks = [
-      { name: 'Lost Items', path: '/lost-items' },
-      { name: 'Found Items', path: '/found-items' },
-      { name: 'Dashboard', path: '/dashboard' },
+      { name: "Lost Items", path: "/lost-items" },
+      { name: "Found Items", path: "/found-items" },
+      { name: "Dashboard", path: "/dashboard" },
     ];
   }
 
@@ -65,8 +65,8 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
               color: colors.darker,
             }}
             onClick={onSignIn}
-            onMouseEnter={e => (e.target.style.opacity = 0.9)}
-            onMouseLeave={e => (e.target.style.opacity = 1)}
+            onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
+            onMouseLeave={(e) => (e.target.style.opacity = 1)}
           >
             Login
           </button>
@@ -77,8 +77,8 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
               color: colors.darker,
             }}
             onClick={onSignUp}
-            onMouseEnter={e => (e.target.style.opacity = 0.9)}
-            onMouseLeave={e => (e.target.style.opacity = 1)}
+            onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
+            onMouseLeave={(e) => (e.target.style.opacity = 1)}
           >
             Signup
           </button>
@@ -93,8 +93,8 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
               color: colors.darker,
             }}
             onClick={onLogout}
-            onMouseEnter={e => (e.target.style.opacity = 0.9)}
-            onMouseLeave={e => (e.target.style.opacity = 1)}
+            onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
+            onMouseLeave={(e) => (e.target.style.opacity = 1)}
           >
             Logout
           </button>
@@ -107,23 +107,21 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle menu"
       >
-        <svg
-          style={{ fill: colors.primary }}
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-8 w-8"
-          viewBox="0 0 24 24"
-          strokeWidth="2"
-          stroke="none"
-        >
-          {menuOpen ? (
-            <path
-              fillRule="evenodd"
-              d="M18.364 5.636a1 1 0 0 0-1.414-1.414L12 9.172 7.05 4.222a1 1 0 1 0-1.414 1.414L10.586 12l-4.95 4.95a1 1 0 1 0 1.414 1.414L12 14.828l4.95 4.95a1 1 0 0 0 1.414-1.414L13.414 12l4.95-4.95z"
-            />
-          ) : (
-            <path d="M4 6h16M4 12h16M4 18h16" />
-          )}
-        </svg>
+        <span
+          className={`block w-6 h-0.5 bg-white transform transition duration-300 ease-in-out ${
+            menuOpen ? "rotate-45 translate-y-1.5" : "-translate-y-2"
+          }`}
+        />
+        <span
+          className={`block w-6 h-0.5 bg-white transition duration-300 ease-in-out ${
+            menuOpen ? "opacity-0" : "opacity-100"
+          }`}
+        />
+        <span
+          className={`block w-6 h-0.5 bg-white transform transition duration-300 ease-in-out ${
+            menuOpen ? "-rotate-45 -translate-y-1.5" : "translate-y-2"
+          }`}
+        />
       </button>
 
       {/* Mobile menu */}
