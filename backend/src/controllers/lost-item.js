@@ -8,6 +8,19 @@ exports.getLostItems = async (req, res, next) => {
   res.send({ data: lostItems });
 };
 
+exports.deleteLostItemAdmin = async (req, res, next) => {
+  await LostItem.findByIdAndDelete(req.params.id);
+  res.send({ message: 'deleted' });
+};
+
+exports.getLostItemsAdmin = async (req, res, next) => {
+  const lostItems = await LostItem.find({ received: false }).populate(
+    'user',
+    'name'
+  );
+  res.send({ data: lostItems });
+};
+
 exports.createLostItem = async (req, res, next) => {
   const user = req.user;
   const { name, category, dateLost, image, description, location } = req.body;

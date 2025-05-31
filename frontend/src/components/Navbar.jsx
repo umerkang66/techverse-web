@@ -12,6 +12,19 @@ const colors = {
 export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
+  let navLinks = [
+    { name: 'Lost Items', path: '/lost-items' },
+    { name: 'Found Items', path: '/found-items' },
+  ];
+
+  if (currentUser && currentUser.role === 'admin') {
+    navLinks = [
+      { name: 'Lost Items', path: '/lost-items' },
+      { name: 'Found Items', path: '/found-items' },
+      { name: 'Dashboard', path: '/dashboard' },
+    ];
+  }
+
   return (
     <nav
       className="flex items-center justify-between px-6 py-4 shadow-md relative"
@@ -29,11 +42,7 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
 
       {/* Desktop Nav Links */}
       <ul className="hidden md:flex space-x-8 text-light font-semibold">
-        {[
-          { name: 'Lost Items', path: '/lost-items' },
-          { name: 'Found Items', path: '/found-items' },
-          { name: 'Dashboard', path: '/dashboard' },
-        ].map(({ name, path }) => (
+        {navLinks.map(({ name, path }) => (
           <li key={name}>
             <Link
               to={path}
@@ -124,11 +133,7 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
           style={{ backgroundColor: colors.darker }}
         >
           <ul className="flex flex-col items-center space-y-3 text-light font-semibold">
-            {[
-              { name: 'Lost Items', path: '/lost-items' },
-              { name: 'Found Items', path: '/found-items' },
-              { name: 'Dashboard', path: '/dashboard' },
-            ].map(({ name, path }) => (
+            {navLinks.map(({ name, path }) => (
               <li key={name}>
                 <Link
                   to={path}

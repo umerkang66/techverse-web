@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const User = require('./user');
 
 const foundItemSchema = new mongoose.Schema(
   {
@@ -8,6 +9,7 @@ const foundItemSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Types.ObjectId,
+      ref: User,
       required: true,
     },
     category: {

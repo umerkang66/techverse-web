@@ -73,7 +73,18 @@ function App() {
               path="/found-items"
               element={<FoundItem currentUser={currentUser} />}
             />
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route
+              path="/dashboard"
+              element={
+                !currentUser ? (
+                  <div>Loading...</div>
+                ) : currentUser.role !== 'admin' ? (
+                  'Not Accessible'
+                ) : (
+                  <Dashboard />
+                )
+              }
+            />
           </Routes>
           <Footer />
         </Router>

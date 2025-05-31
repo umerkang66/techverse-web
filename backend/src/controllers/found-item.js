@@ -7,6 +7,19 @@ exports.getFoundItems = async (req, res, next) => {
   res.send({ data: foundItems });
 };
 
+exports.deleteFoundItemAdmin = async (req, res, next) => {
+  await FoundItem.findByIdAndDelete(req.params.id);
+  res.send({ message: 'deleted' });
+};
+
+exports.getFoundItemsAdmin = async (req, res, next) => {
+  const foundItems = await FoundItem.find({ returned: false }).populate(
+    'user',
+    'name'
+  );
+  res.send({ data: foundItems });
+};
+
 exports.createFoundItem = async (req, res, next) => {
   const user = req.user;
   const { name, category, image, description, location } = req.body;
