@@ -39,14 +39,6 @@ export default function Footer() {
                 Found Items
               </Link>
             </li>
-            <li>
-              <Link
-                to="/dashboard"
-                className="hover:text-cyan-400 duration-200"
-              >
-                Dashboard
-              </Link>
-            </li>
           </ul>
         </div>
 
