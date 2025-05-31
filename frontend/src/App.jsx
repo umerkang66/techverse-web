@@ -11,8 +11,9 @@ import FoundItem from './pages/FoundItem.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import axios from 'axios';
 import Chat from './pages/Chat.jsx';
-import { socket } from './socket-cn.js';
 import { Toaster } from 'react-hot-toast';
+import { socket } from './socket-cn.js';
+import { showMessageToast } from './notification.jsx';
 
 function App() {
   const [_, setIsLoggedIn] = useState(false);
@@ -28,13 +29,35 @@ function App() {
       setCurrentUser(response.data.data.user);
     };
     fetchUser();
-
     socket.connect();
 
     return () => {
       socket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (currentUser?._id) {
+      socket.emit('join', currentUser._id);
+    }
+  }, [currentUser?._id]);
+
+  useEffect(() => {
+    const handlePrivateMessage = data => {
+      if (!currentUser?._id) return;
+
+      // Avoid showing toast if current user is the sender (i.e. message you sent)
+      if (data.from !== currentUser._id) {
+        showMessageToast(currentUser._id, data.from, data.message);
+      }
+    };
+
+    socket.on('private_message', handlePrivateMessage);
+
+    return () => {
+      socket.off('private_message', handlePrivateMessage);
+    };
+  }, [currentUser?._id]);
 
   const onLogout = async () => {
     await axios.get('http://localhost:3000/users/logout', {
