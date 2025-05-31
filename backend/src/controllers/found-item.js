@@ -1,33 +1,32 @@
-const LostItem = require('../models/lost-item');
+const FoundItem = require('../models/found-item');
 const AppError = require('../utils/app-error');
 const cloudinary = require('../utils/cloudinary');
 
-exports.getLostItems = async (req, res, next) => {
-  const lostItems = await LostItem.find();
+exports.getFoundItems = async (req, res, next) => {
+  const foundItems = await FoundItem.find();
 
-  res.send({ data: lostItems });
+  res.send({ data: foundItems });
 };
 
-exports.createLostItem = async (req, res, next) => {
+exports.createFoundItem = async (req, res, next) => {
   const user = req.user;
-  const { name, category, dateLost, image, description, location } = req.body;
+  const { name, category, image, description, location } = req.body;
 
   const { public_id, url } = await cloudinary.uploader.upload(image, {
     folder: 'techverse/items',
   });
 
   // date -> dd/mm/yyyy
-  const lostItem = new LostItem({
+  const foundItem = new FoundItem({
     name,
     user: user.id,
     category,
-    dateLost: new Date(dateLost).toLocaleString(),
     description,
     location,
     image: { public_id, url },
   });
 
-  await lostItem.save();
+  await foundItem.save();
 
   res.status(201).send({
     data: {
@@ -36,23 +35,23 @@ exports.createLostItem = async (req, res, next) => {
   });
 };
 
-exports.setReceived = async (req, res, next) => {
+exports.setReturned = async (req, res, next) => {
   const user = req.user;
   const itemId = req.params.id;
 
-  const item = await LostItem.findById(itemId);
+  const item = await FoundItem.findById(itemId);
 
   if (user.id !== item.user)
     return next(
-      AppError('Only who have created the Lost Item can set Received')
+      AppError('Only who have created the Found Item can set Returned')
     );
 
-  item.received = true;
+  item.returned = true;
   await item.save();
 
   res.status(201).send({
     data: {
-      message: 'Item Set Received',
+      message: 'Item Set Returned',
     },
   });
 };

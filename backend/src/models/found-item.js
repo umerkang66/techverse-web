@@ -6,6 +6,10 @@ const foundItemSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    user: {
+      type: mongoose.Types.ObjectId,
+      required: true,
+    },
     category: {
       type: String,
       required: true,
