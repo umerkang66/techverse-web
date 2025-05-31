@@ -33,7 +33,7 @@ const createSendToken = (user, statusCode, req, res) => {
   });
 };
 
-exports.login = async (req, res) => {
+exports.login = async (req, res, next) => {
   const { email, password } = req.body;
 
   if (!email || !password || !email.includes('@')) {
@@ -49,8 +49,14 @@ exports.login = async (req, res) => {
   createSendToken(user, 200, req, res);
 };
 
-exports.signup = async (req, res) => {
+exports.signup = async (req, res, next) => {
   const { name, email, password, passwordConfirm, role } = req.body;
+
+  if (!email.endsWith('@umt.edu.pk'))
+    return next(new AppError('Only UMT emails are allowed'));
+
+  if (password !== passwordConfirm)
+    return next(new AppError('Password and PasswordConfirm are not Equal'));
 
   if (role.toLowerCase() === 'admin')
     return next(new AppError('You cannot signup as Admin', 400));
@@ -78,17 +84,19 @@ exports.logout = (req, res, next) => {
   });
 };
 
-exports.me = async (req, res) => {
+exports.me = async (req, res, next) => {
   if (req.cookies.jwt) {
     const token = req.cookies.jwt;
 
-    const decoded = await jwtVerifyPromisified(token, process.env.JWT_SECRET);
+    try {
+      const decoded = await jwtVerifyPromisified(token, process.env.JWT_SECRET);
+      const currentUser = await User.findById(decoded.id);
 
-    const currentUser = await User.findById(decoded.id);
-
-    res.send({
-      data: { user: currentUser || null },
-    });
+      return res.send({
+        data: { user: currentUser || null },
+      });
+      // don't do anything in the catch, just return the null user
+    } catch (error) {}
   }
 
   res.send({
@@ -105,17 +113,25 @@ exports.currentUser = async (req, res, next) => {
     );
   }
 
-  const decoded = await jwtVerifyPromisified(token, process.env.JWT_SECRET);
-  const currentUser = await User.findById(decoded.id);
+  try {
+    const decoded = await jwtVerifyPromisified(token, process.env.JWT_SECRET);
+    const currentUser = await User.findById(decoded.id);
 
-  if (!currentUser) {
-    return next(
-      new AppError('The user belonging to this token does no longer exist', 401)
-    );
+    if (!currentUser) {
+      return next(
+        new AppError(
+          'The user belonging to this token does no longer exist',
+          401
+        )
+      );
+    }
+
+    req.user = currentUser;
+    next();
+  } catch (error) {
+    req.user = null;
+    next();
   }
-
-  req.user = currentUser;
-  next();
 };
 
 exports.restrictTo = (...roles) => {
