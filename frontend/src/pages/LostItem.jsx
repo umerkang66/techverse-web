@@ -1,37 +1,75 @@
-import React, { useState } from "react";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 export default function LostItem() {
   const [modalOpen, setModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [lostItems, setLostItems] = useState([]);
+  const [image, setImage] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    dateLost: "",
+    name: '',
+    category: '',
+    dateLost: '',
     image: null,
-    description: "",
-    location: "",
+    description: '',
+    location: '',
   });
 
-  const handleInputChange = (e) => {
-    const { name, value, files } = e.target;
-    setFormData((prev) => ({
+  console.log(lostItems);
+
+  const fetchLostItems = async () => {
+    const response = await axios.get('http://localhost:3000/lost-item');
+    setLostItems(response.data.data);
+  };
+
+  useEffect(() => {
+    fetchLostItems();
+  }, []);
+
+  const handleInputChange = e => {
+    const { name, value } = e.target;
+
+    setFormData(prev => ({
       ...prev,
-      [name]: files ? files[0] : value,
+      [name]: value,
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleImageChange = e => {
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setImage(reader.result);
+      }
+    };
+
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  const handleSubmit = async e => {
     e.preventDefault();
-    const newItem = { ...formData, id: Date.now() };
-    setLostItems([...lostItems, newItem]);
     setFormData({
-      name: "",
-      category: "",
-      dateLost: "",
+      name: '',
+      category: '',
+      dateLost: '',
       image: null,
-      description: "",
-      location: "",
+      description: '',
+      location: '',
     });
+
+    const newItem = { ...formData, image };
+
+    setLoading(true);
+    const response = await axios.post(
+      'http://localhost:3000/lost-item',
+      { ...newItem },
+      { withCredentials: true }
+    );
+    await fetchLostItems();
+    setLoading(false);
+    console.log(response);
+
     setModalOpen(false);
   };
 
@@ -49,18 +87,20 @@ export default function LostItem() {
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {lostItems.map((item) => (
-          <div key={item.id} className="bg-[#1f1f2e] p-4 rounded-lg shadow">
-            {item.image && (
+        {lostItems.map(item => (
+          <div key={item._id} className="bg-[#1f1f2e] p-4 rounded-lg shadow">
+            {item.image && item.image.url && (
               <img
-                src={URL.createObjectURL(item.image)}
+                src={item.image.url}
                 alt="Lost item"
                 className="h-40 w-full object-cover rounded mb-3"
               />
             )}
             <h3 className="text-xl font-semibold">{item.name}</h3>
             <p className="text-sm text-gray-300">{item.category}</p>
-            <p className="text-sm text-gray-400">Date Lost: {item.dateLost}</p>
+            <p className="text-sm text-gray-400">
+              Date Lost: {new Date(item.dateLost).toLocaleDateString()}
+            </p>
             <p className="text-sm mt-2">{item.description}</p>
             <p className="text-sm italic text-gray-400 mt-1">
               Location: {item.location}
@@ -113,7 +153,7 @@ export default function LostItem() {
                 type="file"
                 name="image"
                 accept="image/*"
-                onChange={handleInputChange}
+                onChange={handleImageChange}
                 className="w-full text-sm text-gray-400"
               />
               <textarea
@@ -138,7 +178,7 @@ export default function LostItem() {
                 type="submit"
                 className="w-full bg-[#00ffff] text-black font-semibold py-2 rounded hover:bg-[#ff00ff]"
               >
-                Submit
+                {!loading ? 'Submit' : '...'}
               </button>
             </form>
           </div>

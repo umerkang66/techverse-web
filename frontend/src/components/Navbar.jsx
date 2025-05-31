@@ -1,15 +1,15 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
 const colors = {
-  primary: "#00ffff",
-  secondary: "#ff00ff",
-  dark: "#0f0f1a",
-  darker: "#0a0a12",
-  light: "#f0f0f0",
+  primary: '#00ffff',
+  secondary: '#ff00ff',
+  dark: '#0f0f1a',
+  darker: '#0a0a12',
+  light: '#f0f0f0',
 };
 
-export default function Navbar({ onSignIn, onSignUp }) {
+export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
@@ -30,9 +30,9 @@ export default function Navbar({ onSignIn, onSignUp }) {
       {/* Desktop Nav Links */}
       <ul className="hidden md:flex space-x-8 text-light font-semibold">
         {[
-          { name: "Lost Items", path: "/lost-items" },
-          { name: "Found Items", path: "/found-items" },
-          { name: "Dashboard", path: "/dashboard" },
+          { name: 'Lost Items', path: '/lost-items' },
+          { name: 'Found Items', path: '/found-items' },
+          { name: 'Dashboard', path: '/dashboard' },
         ].map(({ name, path }) => (
           <li key={name}>
             <Link
@@ -47,32 +47,50 @@ export default function Navbar({ onSignIn, onSignUp }) {
       </ul>
 
       {/* Auth Buttons (desktop) */}
-      <div className="hidden md:flex space-x-4">
-        <button
-          className="px-4 py-2 rounded font-semibold transition-opacity"
-          style={{
-            backgroundColor: colors.primary,
-            color: colors.darker,
-          }}
-          onClick={onSignIn}
-          onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
-          onMouseLeave={(e) => (e.target.style.opacity = 1)}
-        >
-          Login
-        </button>
-        <button
-          className="px-4 py-2 rounded font-semibold transition-opacity"
-          style={{
-            backgroundColor: colors.secondary,
-            color: colors.darker,
-          }}
-          onClick={onSignUp}
-          onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
-          onMouseLeave={(e) => (e.target.style.opacity = 1)}
-        >
-          Signup
-        </button>
-      </div>
+      {!currentUser ? (
+        <div className="hidden md:flex space-x-4">
+          <button
+            className="px-4 py-2 rounded font-semibold transition-opacity"
+            style={{
+              backgroundColor: colors.primary,
+              color: colors.darker,
+            }}
+            onClick={onSignIn}
+            onMouseEnter={e => (e.target.style.opacity = 0.9)}
+            onMouseLeave={e => (e.target.style.opacity = 1)}
+          >
+            Login
+          </button>
+          <button
+            className="px-4 py-2 rounded font-semibold transition-opacity"
+            style={{
+              backgroundColor: colors.secondary,
+              color: colors.darker,
+            }}
+            onClick={onSignUp}
+            onMouseEnter={e => (e.target.style.opacity = 0.9)}
+            onMouseLeave={e => (e.target.style.opacity = 1)}
+          >
+            Signup
+          </button>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center">
+          <div className="mr-2">{currentUser.name}</div>
+          <button
+            className="px-4 py-2 rounded font-semibold transition-opacity cursor-pointer"
+            style={{
+              backgroundColor: colors.primary,
+              color: colors.darker,
+            }}
+            onClick={onLogout}
+            onMouseEnter={e => (e.target.style.opacity = 0.9)}
+            onMouseLeave={e => (e.target.style.opacity = 1)}
+          >
+            Logout
+          </button>
+        </div>
+      )}
 
       {/* Hamburger Menu Button (mobile) */}
       <button
@@ -107,9 +125,9 @@ export default function Navbar({ onSignIn, onSignUp }) {
         >
           <ul className="flex flex-col items-center space-y-3 text-light font-semibold">
             {[
-              { name: "Lost Items", path: "/lost-items" },
-              { name: "Found Items", path: "/found-items" },
-              { name: "Dashboard", path: "/dashboard" },
+              { name: 'Lost Items', path: '/lost-items' },
+              { name: 'Found Items', path: '/found-items' },
+              { name: 'Dashboard', path: '/dashboard' },
             ].map(({ name, path }) => (
               <li key={name}>
                 <Link
