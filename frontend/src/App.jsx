@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from './assets/components/Navbar.jsx';
-import Hero from './assets/components/Hero.jsx';
-import Features from './assets/components/Features.jsx';
-import Footer from './assets/components/Footer.jsx';
-import AuthForm from './assets/pages/AuthForm.jsx';
+import Navbar from './components/Navbar.jsx';
+import Hero from './components/Hero.jsx';
+import Features from './components/Features.jsx';
+import Footer from './components/Footer.jsx';
+import AuthForm from './pages/AuthForm.jsx';
 import axios from 'axios';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [_, setIsLoggedIn] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const [authMode, setAuthMode] = useState(null);
 
   useEffect(() => {
@@ -15,11 +16,20 @@ function App() {
       const response = await axios.get('http://localhost:3000/users/me', {
         withCredentials: true,
       });
-      console.log(response);
+
+      setCurrentUser(response.data.data.user);
     };
 
     fetchUser();
   }, []);
+
+  const logout = async () => {
+    await axios.get('http://localhost:3000/users/logout', {
+      withCredentials: true,
+    });
+
+    window.location.reload();
+  };
 
   return (
     <div className="bg-[#0f0f1a] min-h-screen text-white">
@@ -27,6 +37,8 @@ function App() {
         <Navbar
           onSignIn={() => setAuthMode('signin')}
           onSignUp={() => setAuthMode('signup')}
+          onLogout={logout}
+          currentUser={currentUser}
         />
         <Hero />
         <Features />
