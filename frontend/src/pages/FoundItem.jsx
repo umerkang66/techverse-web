@@ -1,43 +1,73 @@
-import React, { useState } from "react";
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 export default function FoundItem() {
   const [showModal, setShowModal] = useState(false);
   const [foundItems, setFoundItems] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [image, setImage] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    dateFound: "",
+    name: '',
+    category: '',
+    dateFound: '',
     image: null,
-    description: "",
-    location: "",
+    description: '',
+    location: '',
   });
 
-  const handleChange = (e) => {
-    const { name, value, files } = e.target;
+  const fetchFoundItems = async () => {
+    const response = await axios.get('http://localhost:3000/found-item');
+    setFoundItems(response.data.data);
+  };
+
+  useEffect(() => {
+    fetchFoundItems();
+  }, []);
+
+  const handleChange = e => {
+    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: files ? files[0] : value,
+      [name]: value,
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleImageChange = e => {
+    const reader = new FileReader();
 
-    const newItem = {
-      ...formData,
-      imageURL: formData.image ? URL.createObjectURL(formData.image) : null,
+    reader.onload = () => {
+      if (reader.readyState === 2) {
+        setImage(reader.result);
+      }
     };
 
-    setFoundItems([...foundItems, newItem]);
+    reader.readAsDataURL(e.target.files[0]);
+  };
+
+  const handleSubmit = async e => {
+    e.preventDefault();
+
     setFormData({
-      name: "",
-      category: "",
-      dateFound: "",
+      name: '',
+      category: '',
       image: null,
-      description: "",
-      location: "",
+      description: '',
+      location: '',
     });
+
+    const newItem = { ...formData, image };
+
+    setLoading(true);
+    const response = await axios.post(
+      'http://localhost:3000/found-item',
+      { ...newItem },
+      { withCredentials: true }
+    );
+    await fetchFoundItems();
+    setLoading(false);
+    console.log(response);
+
     setShowModal(false);
   };
 
@@ -55,20 +85,17 @@ export default function FoundItem() {
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {foundItems.map((item, index) => (
-          <div key={index} className="bg-[#1a1a2e] rounded-lg p-4 shadow-lg">
-            {item.imageURL && (
+        {foundItems.map(item => (
+          <div key={item._id} className="bg-[#1a1a2e] rounded-lg p-4 shadow-lg">
+            {item.image && item.image.url && (
               <img
-                src={item.imageURL}
+                src={item.image.url}
                 alt="Found"
                 className="w-full h-48 object-cover rounded-md mb-4"
               />
             )}
             <h3 className="text-xl font-semibold">{item.name}</h3>
             <p className="text-sm text-gray-400">Category: {item.category}</p>
-            <p className="text-sm text-gray-400">
-              Date Found: {item.dateFound}
-            </p>
             <p className="text-sm mt-2">{item.description}</p>
             <p className="text-sm text-gray-400 mt-1">
               Location: {item.location}
@@ -113,7 +140,7 @@ export default function FoundItem() {
                 type="file"
                 name="image"
                 accept="image/*"
-                onChange={handleChange}
+                onChange={handleImageChange}
                 className="w-full p-2 rounded bg-[#0f0f1a] border border-gray-700"
               />
               <textarea
@@ -147,7 +174,7 @@ export default function FoundItem() {
                   type="submit"
                   className="px-4 py-2 bg-cyan-500 rounded hover:bg-cyan-600"
                 >
-                  Post Item
+                  {loading ? '...' : 'Post Item'}
                 </button>
               </div>
             </form>
