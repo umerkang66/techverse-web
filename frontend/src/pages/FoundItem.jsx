@@ -1,6 +1,6 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { BiChat } from "react-icons/bi";
 export default function FoundItem() {
   const [showModal, setShowModal] = useState(false);
   const [foundItems, setFoundItems] = useState([]);
@@ -8,16 +8,16 @@ export default function FoundItem() {
   const [image, setImage] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    dateFound: '',
+    name: "",
+    category: "",
+    dateFound: "",
     image: null,
-    description: '',
-    location: '',
+    description: "",
+    location: "",
   });
 
   const fetchFoundItems = async () => {
-    const response = await axios.get('http://localhost:3000/found-item');
+    const response = await axios.get("http://localhost:3000/found-item");
     setFoundItems(response.data.data);
   };
 
@@ -25,7 +25,7 @@ export default function FoundItem() {
     fetchFoundItems();
   }, []);
 
-  const handleChange = e => {
+  const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -33,7 +33,7 @@ export default function FoundItem() {
     });
   };
 
-  const handleImageChange = e => {
+  const handleImageChange = (e) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -45,22 +45,22 @@ export default function FoundItem() {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setFormData({
-      name: '',
-      category: '',
+      name: "",
+      category: "",
       image: null,
-      description: '',
-      location: '',
+      description: "",
+      location: "",
     });
 
     const newItem = { ...formData, image };
 
     setLoading(true);
     const response = await axios.post(
-      'http://localhost:3000/found-item',
+      "http://localhost:3000/found-item",
       { ...newItem },
       { withCredentials: true }
     );
@@ -84,20 +84,34 @@ export default function FoundItem() {
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {foundItems.map(item => (
-          <div key={item._id} className="bg-[#1a1a2e] rounded-lg p-4 shadow-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {foundItems.map((item) => (
+          <div key={item._id} className="bg-[#1f1f2e] p-4 rounded-lg shadow">
             {item.image && item.image.url && (
               <img
                 src={item.image.url}
-                alt="Found"
-                className="w-full h-48 object-cover rounded-md mb-4"
+                alt="Lost item"
+                className="h-40 w-full object-cover rounded mb-3"
               />
             )}
             <h3 className="text-xl font-semibold">{item.name}</h3>
-            <p className="text-sm text-gray-400">Category: {item.category}</p>
-            <p className="text-sm mt-2">{item.description}</p>
-            <p className="text-sm text-gray-400 mt-1">
+            <p className="text-sm text-gray-300">{item.category}</p>
+            <p className="text-sm text-gray-400">
+              Date Lost: {new Date(item.dateLost).toLocaleDateString()}
+            </p>
+
+            {/* Description and Chat button in same row */}
+            <div className="flex items-start justify-between mt-2">
+              <p className="text-sm">{item.description}</p>
+              <button
+                className="bg-[#37db53] text-black px-3 py-1 cursor-pointer rounded shadow-lg text-sm whitespace-nowrap ml-2"
+                aria-label="Chat"
+              >
+                <BiChat className="text-lg " />
+              </button>
+            </div>
+
+            <p className="text-sm italic text-gray-400 mt-1">
               Location: {item.location}
             </p>
           </div>
@@ -172,9 +186,9 @@ export default function FoundItem() {
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-cyan-500 rounded hover:bg-cyan-600"
+                  className="px-4 py-2 text-black bg-[#00ffff] rounded hover:bg-[#ff00ff]"
                 >
-                  {loading ? '...' : 'Post Item'}
+                  {loading ? "..." : "Post Item"}
                 </button>
               </div>
             </form>

@@ -1,24 +1,24 @@
-import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { BiChat } from "react-icons/bi";
 export default function LostItem() {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [lostItems, setLostItems] = useState([]);
   const [image, setImage] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
-    category: '',
-    dateLost: '',
+    name: "",
+    category: "",
+    dateLost: "",
     image: null,
-    description: '',
-    location: '',
+    description: "",
+    location: "",
   });
 
   console.log(lostItems);
 
   const fetchLostItems = async () => {
-    const response = await axios.get('http://localhost:3000/lost-item');
+    const response = await axios.get("http://localhost:3000/lost-item");
     setLostItems(response.data.data);
   };
 
@@ -26,16 +26,16 @@ export default function LostItem() {
     fetchLostItems();
   }, []);
 
-  const handleInputChange = e => {
+  const handleInputChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleImageChange = e => {
+  const handleImageChange = (e) => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -47,22 +47,22 @@ export default function LostItem() {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setFormData({
-      name: '',
-      category: '',
-      dateLost: '',
+      name: "",
+      category: "",
+      dateLost: "",
       image: null,
-      description: '',
-      location: '',
+      description: "",
+      location: "",
     });
 
     const newItem = { ...formData, image };
 
     setLoading(true);
     const response = await axios.post(
-      'http://localhost:3000/lost-item',
+      "http://localhost:3000/lost-item",
       { ...newItem },
       { withCredentials: true }
     );
@@ -74,11 +74,11 @@ export default function LostItem() {
   };
 
   return (
-    <div className="p-6 text-white">
-      <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen p-6 py-10 px-4 text-white">
+      <div className="flex justify-between items-center mb-8 max-w-6xl mx-auto">
         <h2 className="text-3xl font-bold">Lost Items</h2>
         <button
-          className="bg-[#00ffff] text-black px-4 py-2 rounded hover:bg-[#ff00ff]"
+          className="bg-[#00ffff] text-black font-medium px-4 py-2 rounded hover:bg-[#ff00ff]"
           onClick={() => setModalOpen(true)}
         >
           + Add Lost Item
@@ -87,7 +87,7 @@ export default function LostItem() {
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {lostItems.map(item => (
+        {lostItems.map((item) => (
           <div key={item._id} className="bg-[#1f1f2e] p-4 rounded-lg shadow">
             {item.image && item.image.url && (
               <img
@@ -101,7 +101,18 @@ export default function LostItem() {
             <p className="text-sm text-gray-400">
               Date Lost: {new Date(item.dateLost).toLocaleDateString()}
             </p>
-            <p className="text-sm mt-2">{item.description}</p>
+
+            {/* Description and Chat button in same row */}
+            <div className="flex items-start justify-between mt-2">
+              <p className="text-sm">{item.description}</p>
+              <button
+                className="bg-[#37db53] text-black px-3 py-1 cursor-pointer rounded shadow-lg text-sm whitespace-nowrap ml-2"
+                aria-label="Chat"
+              >
+                <BiChat className="text-lg " />
+              </button>
+            </div>
+
             <p className="text-sm italic text-gray-400 mt-1">
               Location: {item.location}
             </p>
@@ -178,7 +189,7 @@ export default function LostItem() {
                 type="submit"
                 className="w-full bg-[#00ffff] text-black font-semibold py-2 rounded hover:bg-[#ff00ff]"
               >
-                {!loading ? 'Submit' : '...'}
+                {!loading ? "Submit" : "..."}
               </button>
             </form>
           </div>

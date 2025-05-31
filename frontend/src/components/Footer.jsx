@@ -73,7 +73,7 @@ export default function Footer() {
       <hr className="my-6 border-gray-700" />
 
       <div className="text-center text-sm text-gray-500">
-        &copy; {new Date().getFullYear()} TrackIt. All rights reserved.
+        &copy; {new Date().getFullYear()} Trackit. All rights reserved.
       </div>
     </footer>
   );

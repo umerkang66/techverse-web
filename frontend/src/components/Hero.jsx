@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 export default function Hero() {
   return (
     <div>
@@ -13,12 +13,18 @@ export default function Hero() {
           portal to post or claim lost belongings quickly and securely.
         </p>
         <div className="space-x-4">
-          <button className="px-6 py-3 bg-[#00ffff] text-[#0a0a12] rounded font-bold hover:scale-105 transition">
+          <Link
+            to="/lost-items"
+            className="px-6 py-3 bg-[#00ffff] text-[#0a0a12] rounded font-bold hover:scale-105 transition"
+          >
             Report Lost Item
-          </button>
-          <button className="px-6 py-3 bg-[#ff00ff] text-[#0a0a12] rounded font-bold hover:scale-105 transition">
+          </Link>
+          <Link
+            to="/found-items"
+            className="px-6 py-3 bg-[#ff00ff] text-[#0a0a12] rounded font-bold hover:scale-105 transition"
+          >
             View Found Items
-          </button>
+          </Link>
         </div>
       </section>
     </div>
