@@ -12,19 +12,25 @@ exports.createLostItem = async (req, res, next) => {
   const user = req.user;
   const { name, category, dateLost, image, description, location } = req.body;
 
-  const { public_id, url } = await cloudinary.uploader.upload(image, {
-    folder: 'techverse/items',
-  });
+  let imagedata = { public_id: '', url: '' };
 
-  // date -> dd/mm/yyyy
+  if (image) {
+    const uploadResponse = await cloudinary.uploader.upload(image, {
+      folder: 'techverse/items',
+    });
+    imagedata.public_id = uploadResponse.public_id;
+    imagedata.url = uploadResponse.url;
+  }
+
+  // date -> yy/mm/dd
   const lostItem = new LostItem({
     name,
     user: user.id,
     category,
-    dateLost: new Date(dateLost).toLocaleString(),
+    dateLost: new Date(dateLost),
     description,
     location,
-    image: { public_id, url },
+    image: imagedata,
   });
 
   await lostItem.save();

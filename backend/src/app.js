@@ -5,15 +5,17 @@ const cookieParser = require('cookie-parser');
 const AppError = require('./utils/app-error');
 const userRouter = require('./routes/user');
 const lostItemRouter = require('./routes/lost-item');
+const foundItemRouter = require('./routes/found-item');
 
 const app = express();
 
 app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
 app.use(cookieParser());
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
 app.use('/users', userRouter);
 app.use('/lost-item', lostItemRouter);
+app.use('/found-item', foundItemRouter);
 
 app.use((err, req, res, next) => {
   if (err instanceof AppError) {

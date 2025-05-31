@@ -12,18 +12,24 @@ exports.createFoundItem = async (req, res, next) => {
   const user = req.user;
   const { name, category, image, description, location } = req.body;
 
-  const { public_id, url } = await cloudinary.uploader.upload(image, {
-    folder: 'techverse/items',
-  });
+  let imagedata = { public_id: '', url: '' };
 
-  // date -> dd/mm/yyyy
+  if (image) {
+    const uploadResponse = await cloudinary.uploader.upload(image, {
+      folder: 'techverse/items',
+    });
+    imagedata.public_id = uploadResponse.public_id;
+    imagedata.url = uploadResponse.url;
+  }
+
   const foundItem = new FoundItem({
     name,
     user: user.id,
     category,
     description,
     location,
-    image: { public_id, url },
+    image: imagedata,
+    returned: false,
   });
 
   await foundItem.save();
