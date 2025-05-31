@@ -1,23 +1,24 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { BiChat } from "react-icons/bi";
-export default function FoundItem() {
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { BiChat } from 'react-icons/bi';
+import ReturnBts from '../components/ReturnBtn';
+import ReturnBtn from '../components/ReturnBtn';
+export default function FoundItem({ currentUser }) {
   const [showModal, setShowModal] = useState(false);
   const [foundItems, setFoundItems] = useState([]);
   const [loading, setLoading] = useState(false);
   const [image, setImage] = useState(null);
 
   const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    dateFound: "",
+    name: '',
+    category: '',
     image: null,
-    description: "",
-    location: "",
+    description: '',
+    location: '',
   });
 
   const fetchFoundItems = async () => {
-    const response = await axios.get("http://localhost:3000/found-item");
+    const response = await axios.get('http://localhost:3000/found-item');
     setFoundItems(response.data.data);
   };
 
@@ -25,7 +26,7 @@ export default function FoundItem() {
     fetchFoundItems();
   }, []);
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -33,7 +34,7 @@ export default function FoundItem() {
     });
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -45,22 +46,22 @@ export default function FoundItem() {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     setFormData({
-      name: "",
-      category: "",
+      name: '',
+      category: '',
       image: null,
-      description: "",
-      location: "",
+      description: '',
+      location: '',
     });
 
     const newItem = { ...formData, image };
 
     setLoading(true);
     const response = await axios.post(
-      "http://localhost:3000/found-item",
+      'http://localhost:3000/found-item',
       { ...newItem },
       { withCredentials: true }
     );
@@ -85,8 +86,11 @@ export default function FoundItem() {
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {foundItems.map((item) => (
-          <div key={item._id} className="bg-[#1f1f2e] p-4 rounded-lg shadow">
+        {foundItems.map(item => (
+          <div
+            key={item._id}
+            className="bg-[#1f1f2e] p-4 rounded-lg shadow relative"
+          >
             {item.image && item.image.url && (
               <img
                 src={item.image.url}
@@ -96,15 +100,20 @@ export default function FoundItem() {
             )}
             <h3 className="text-xl font-semibold">{item.name}</h3>
             <p className="text-sm text-gray-300">{item.category}</p>
-            <p className="text-sm text-gray-400">
-              Date Lost: {new Date(item.dateLost).toLocaleDateString()}
-            </p>
+            <p className="text-sm text-gray-400"></p>
 
             {/* Description and Chat button in same row */}
             <div className="flex items-start justify-between mt-2">
               <p className="text-sm">{item.description}</p>
+              {currentUser && currentUser._id === item.user ? (
+                <ReturnBtn
+                  item_id={item._id}
+                  key={item._id}
+                  onSuccess={fetchFoundItems}
+                />
+              ) : null}
               <button
-                className="bg-[#37db53] text-black px-3 py-1 cursor-pointer rounded shadow-lg text-sm whitespace-nowrap ml-2"
+                className="absolute bottom-4 right-4 bg-[#37db53] text-black px-3 py-1 cursor-pointer rounded shadow-lg text-sm whitespace-nowrap ml-2"
                 aria-label="Chat"
               >
                 <BiChat className="text-lg " />
@@ -188,7 +197,7 @@ export default function FoundItem() {
                   type="submit"
                   className="px-4 py-2 text-black bg-[#00ffff] rounded hover:bg-[#ff00ff]"
                 >
-                  {loading ? "..." : "Post Item"}
+                  {loading ? '...' : 'Post Item'}
                 </button>
               </div>
             </form>

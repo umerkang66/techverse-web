@@ -65,8 +65,14 @@ function App() {
                 </div>
               }
             />
-            <Route path="/lost-items" element={<LostItem />} />
-            <Route path="/found-items" element={<FoundItem />} />
+            <Route
+              path="/lost-items"
+              element={<LostItem currentUser={currentUser} />}
+            />
+            <Route
+              path="/found-items"
+              element={<FoundItem currentUser={currentUser} />}
+            />
             <Route path="/dashboard" element={<Dashboard />} />
           </Routes>
           <Footer />

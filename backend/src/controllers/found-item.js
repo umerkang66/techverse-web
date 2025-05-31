@@ -3,8 +3,7 @@ const AppError = require('../utils/app-error');
 const cloudinary = require('../utils/cloudinary');
 
 exports.getFoundItems = async (req, res, next) => {
-  const foundItems = await FoundItem.find();
-
+  const foundItems = await FoundItem.find({ returned: false });
   res.send({ data: foundItems });
 };
 
@@ -47,10 +46,9 @@ exports.setReturned = async (req, res, next) => {
 
   const item = await FoundItem.findById(itemId);
 
-  if (user.id !== item.user)
-    return next(
-      AppError('Only who have created the Found Item can set Returned')
-    );
+  if (user._id.toString() !== item.user.toString() && user.role != 'admin') {
+    return next(new AppError('You cannot set it Returned', 400));
+  }
 
   item.returned = true;
   await item.save();

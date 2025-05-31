@@ -1,24 +1,25 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { BiChat } from "react-icons/bi";
-export default function LostItem() {
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { BiChat } from 'react-icons/bi';
+import FoundBtn from '../components/FoundBtn';
+export default function LostItem({ currentUser }) {
   const [modalOpen, setModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [lostItems, setLostItems] = useState([]);
   const [image, setImage] = useState(null);
   const [formData, setFormData] = useState({
-    name: "",
-    category: "",
-    dateLost: "",
+    name: '',
+    category: '',
+    dateLost: '',
     image: null,
-    description: "",
-    location: "",
+    description: '',
+    location: '',
   });
 
   console.log(lostItems);
 
   const fetchLostItems = async () => {
-    const response = await axios.get("http://localhost:3000/lost-item");
+    const response = await axios.get('http://localhost:3000/lost-item');
     setLostItems(response.data.data);
   };
 
@@ -26,16 +27,16 @@ export default function LostItem() {
     fetchLostItems();
   }, []);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = e => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
   };
 
-  const handleImageChange = (e) => {
+  const handleImageChange = e => {
     const reader = new FileReader();
 
     reader.onload = () => {
@@ -47,22 +48,25 @@ export default function LostItem() {
     reader.readAsDataURL(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
+  console.log(currentUser);
+  console.log(lostItems);
+
+  const handleSubmit = async e => {
     e.preventDefault();
     setFormData({
-      name: "",
-      category: "",
-      dateLost: "",
+      name: '',
+      category: '',
+      dateLost: '',
       image: null,
-      description: "",
-      location: "",
+      description: '',
+      location: '',
     });
 
     const newItem = { ...formData, image };
 
     setLoading(true);
     const response = await axios.post(
-      "http://localhost:3000/lost-item",
+      'http://localhost:3000/lost-item',
       { ...newItem },
       { withCredentials: true }
     );
@@ -87,8 +91,11 @@ export default function LostItem() {
 
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {lostItems.map((item) => (
-          <div key={item._id} className="bg-[#1f1f2e] p-4 rounded-lg shadow">
+        {lostItems.map(item => (
+          <div
+            key={item._id}
+            className="bg-[#1f1f2e] p-4 rounded-lg shadow relative"
+          >
             {item.image && item.image.url && (
               <img
                 src={item.image.url}
@@ -105,8 +112,15 @@ export default function LostItem() {
             {/* Description and Chat button in same row */}
             <div className="flex items-start justify-between mt-2">
               <p className="text-sm">{item.description}</p>
+              {currentUser && currentUser._id === item.user ? (
+                <FoundBtn
+                  item_id={item._id}
+                  key={item._id}
+                  onSuccess={fetchLostItems}
+                />
+              ) : null}
               <button
-                className="bg-[#37db53] text-black px-3 py-1 cursor-pointer rounded shadow-lg text-sm whitespace-nowrap ml-2"
+                className="bg-[#37db53] text-black px-3 py-1 cursor-pointer rounded shadow-lg text-sm whitespace-nowrap ml-2 absolute bottom-4 right-4"
                 aria-label="Chat"
               >
                 <BiChat className="text-lg " />
@@ -189,7 +203,7 @@ export default function LostItem() {
                 type="submit"
                 className="w-full bg-[#00ffff] text-black font-semibold py-2 rounded hover:bg-[#ff00ff]"
               >
-                {!loading ? "Submit" : "..."}
+                {!loading ? 'Submit' : '...'}
               </button>
             </form>
           </div>

@@ -14,7 +14,7 @@ router.post(
   lostItemController.createLostItem
 );
 
-router.post(
+router.get(
   '/set-received/:id',
   authController.currentUser,
   authController.restrictTo('user'),

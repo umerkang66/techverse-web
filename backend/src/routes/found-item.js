@@ -14,10 +14,9 @@ router.post(
   foundItemController.createFoundItem
 );
 
-router.post(
-  '/set-received/:id',
+router.get(
+  '/set-returned/:id',
   authController.currentUser,
-  authController.restrictTo('user'),
   foundItemController.setReturned
 );
 

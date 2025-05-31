@@ -3,7 +3,7 @@ const AppError = require('../utils/app-error');
 const cloudinary = require('../utils/cloudinary');
 
 exports.getLostItems = async (req, res, next) => {
-  const lostItems = await LostItem.find();
+  const lostItems = await LostItem.find({ received: false });
 
   res.send({ data: lostItems });
 };
@@ -48,10 +48,9 @@ exports.setReceived = async (req, res, next) => {
 
   const item = await LostItem.findById(itemId);
 
-  if (user.id !== item.user)
-    return next(
-      AppError('Only who have created the Lost Item can set Received')
-    );
+  if (user._id.toString() !== item.user.toString() && user.role != 'admin') {
+    return next(new AppError('You cannot set it Received', 400));
+  }
 
   item.received = true;
   await item.save();
