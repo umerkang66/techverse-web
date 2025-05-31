@@ -1,88 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
 
 const colors = {
-  primary: '#00ffff',
-  secondary: '#ff00ff',
-  dark: '#0f0f1a',
-  darker: '#0a0a12',
-  light: '#f0f0f0',
+  primary: "#00ffff",
+  secondary: "#ff00ff",
+  dark: "#0f0f1a",
+  darker: "#0a0a12",
+  light: "#f0f0f0",
 };
 
-export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
+export default function Navbar({ onSignIn, onSignUp }) {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <nav
-      className="flex items-center justify-between px-6 py-4 shadow-md"
+      className="flex items-center justify-between px-6 py-4 shadow-md relative"
       style={{ backgroundColor: colors.darker }}
     >
       {/* Brand */}
-      <h1
-        className="text-2xl font-bold cursor-pointer"
-        style={{ color: colors.primary }}
-      >
-        Trackit
-      </h1>
+      <Link to="/">
+        <h1
+          className="text-2xl font-bold cursor-pointer"
+          style={{ color: colors.primary }}
+        >
+          Trackit
+        </h1>
+      </Link>
 
       {/* Desktop Nav Links */}
       <ul className="hidden md:flex space-x-8 text-light font-semibold">
-        {['Lost Items', 'Found Items', 'Dashboard'].map(item => (
-          <li
-            key={item}
-            className="cursor-pointer hover:text-[#ff00ff] transition-colors"
-            style={{ color: colors.light }}
-          >
-            {item}
+        {[
+          { name: "Lost Items", path: "/lost-items" },
+          { name: "Found Items", path: "/found-items" },
+          { name: "Dashboard", path: "/dashboard" },
+        ].map(({ name, path }) => (
+          <li key={name}>
+            <Link
+              to={path}
+              className="cursor-pointer hover:text-[#ff00ff] transition-colors"
+              style={{ color: colors.light }}
+            >
+              {name}
+            </Link>
           </li>
         ))}
       </ul>
 
       {/* Auth Buttons (desktop) */}
       <div className="hidden md:flex space-x-4">
-        {!currentUser ? (
-          <>
-            <button
-              className="px-4 py-2 rounded font-semibold transition-opacity"
-              style={{
-                backgroundColor: colors.primary,
-                color: colors.darker,
-              }}
-              onClick={onSignIn}
-              onMouseEnter={e => (e.target.style.opacity = 0.9)}
-              onMouseLeave={e => (e.target.style.opacity = 1)}
-            >
-              Login
-            </button>
-            <button
-              className="px-4 py-2 rounded font-semibold transition-opacity"
-              style={{
-                backgroundColor: colors.secondary,
-                color: colors.darker,
-              }}
-              onClick={onSignUp}
-              onMouseEnter={e => (e.target.style.opacity = 0.9)}
-              onMouseLeave={e => (e.target.style.opacity = 1)}
-            >
-              Signup
-            </button>
-          </>
-        ) : (
-          <div className="flex justify-center items-center cursor-pointer">
-            <div className="mr-3">{currentUser.name}</div>
-            <button
-              className="px-4 py-2 rounded font-semibold transition-opacity"
-              style={{
-                backgroundColor: colors.primary,
-                color: colors.darker,
-              }}
-              onClick={onLogout}
-              onMouseEnter={e => (e.target.style.opacity = 0.9)}
-              onMouseLeave={e => (e.target.style.opacity = 1)}
-            >
-              Logout
-            </button>
-          </div>
-        )}
+        <button
+          className="px-4 py-2 rounded font-semibold transition-opacity"
+          style={{
+            backgroundColor: colors.primary,
+            color: colors.darker,
+          }}
+          onClick={onSignIn}
+          onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
+          onMouseLeave={(e) => (e.target.style.opacity = 1)}
+        >
+          Login
+        </button>
+        <button
+          className="px-4 py-2 rounded font-semibold transition-opacity"
+          style={{
+            backgroundColor: colors.secondary,
+            color: colors.darker,
+          }}
+          onClick={onSignUp}
+          onMouseEnter={(e) => (e.target.style.opacity = 0.9)}
+          onMouseLeave={(e) => (e.target.style.opacity = 1)}
+        >
+          Signup
+        </button>
       </div>
 
       {/* Hamburger Menu Button (mobile) */}
@@ -98,7 +87,6 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
           viewBox="0 0 24 24"
           strokeWidth="2"
           stroke="none"
-          fillRule="evenodd"
         >
           {menuOpen ? (
             <path
@@ -114,18 +102,24 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
       {/* Mobile menu */}
       {menuOpen && (
         <div
-          className="absolute top-full left-0 w-full bg-[#0a0a12] flex flex-col items-center py-4 space-y-4 md:hidden "
+          className="absolute top-full left-0 w-full bg-[#0a0a12] flex flex-col items-center py-4 space-y-4 md:hidden z-50"
           style={{ backgroundColor: colors.darker }}
         >
           <ul className="flex flex-col items-center space-y-3 text-light font-semibold">
-            {['Lost Items', 'Found Items', 'Dashboard'].map(item => (
-              <li
-                key={item}
-                className="cursor-pointer hover:text-[#ff00ff] transition-colors"
-                style={{ color: colors.light }}
-                onClick={() => setMenuOpen(false)}
-              >
-                {item}
+            {[
+              { name: "Lost Items", path: "/lost-items" },
+              { name: "Found Items", path: "/found-items" },
+              { name: "Dashboard", path: "/dashboard" },
+            ].map(({ name, path }) => (
+              <li key={name}>
+                <Link
+                  to={path}
+                  className="cursor-pointer hover:text-[#ff00ff] transition-colors"
+                  style={{ color: colors.light }}
+                  onClick={() => setMenuOpen(false)}
+                >
+                  {name}
+                </Link>
               </li>
             ))}
           </ul>
@@ -138,7 +132,7 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
                 color: colors.darker,
               }}
               onClick={() => {
-                alert('Login clicked');
+                onSignIn?.();
                 setMenuOpen(false);
               }}
             >
@@ -151,7 +145,7 @@ export default function Navbar({ onSignIn, onSignUp, onLogout, currentUser }) {
                 color: colors.darker,
               }}
               onClick={() => {
-                alert('Signup clicked');
+                onSignUp?.();
                 setMenuOpen(false);
               }}
             >
