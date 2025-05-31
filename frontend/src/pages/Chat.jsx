@@ -1,14 +1,20 @@
 import { useState, useEffect } from 'react';
-import { io } from 'socket.io-client';
+import { useParams } from 'react-router-dom';
+import { socket } from '../socket-cn';
 
-const socket = io('http://localhost:3000');
-
-export default function ChatPage({ userId, targetUserId }) {
+export default function ChatPage() {
   const [message, setMessage] = useState('');
   const [chat, setChat] = useState([]);
+  const { sender, receiver } = useParams();
 
   useEffect(() => {
-    socket.emit('join', userId);
+    socket.emit('join', sender);
+
+    socket.emit('get_messages', { from: sender, to: receiver });
+
+    socket.on('chat_history', messages => {
+      setChat(messages);
+    });
 
     socket.on('private_message', data => {
       setChat(prev => [...prev, data]);
@@ -17,33 +23,39 @@ export default function ChatPage({ userId, targetUserId }) {
     return () => {
       socket.off('private_message');
     };
-  }, [userId]);
+  }, [sender]);
 
   const sendMessage = () => {
     if (!message.trim()) return;
 
-    const msgData = { from: userId, to: targetUserId, message };
+    const msgData = { from: sender, to: receiver, message };
     socket.emit('private_message', msgData);
-    setChat(prev => [...prev, { from: userId, message }]);
+    msgData.from = sender;
+    msgData.to = receiver;
+    setChat(prev => [...prev, msgData]);
     setMessage('');
   };
 
   return (
     <div className="h-screen bg-[#0a0a12] text-[#f0f0f0] p-4 flex flex-col">
       <h1 className="text-xl text-cyan-400 font-semibold mb-2">
-        Chat with User
+        Chat with User {receiver}
       </h1>
 
       <div className="flex-1 overflow-y-auto bg-[#1a1a2e] rounded-xl p-3 mb-3">
         {chat.map((msg, index) => (
           <div
             key={index}
-            className={`mb-2 max-w-[70%] px-4 py-2 rounded-lg text-sm ${
-              msg.from === userId
-                ? 'bg-cyan-500 ml-auto text-black'
-                : 'bg-gray-700 text-white'
+            className={`mb-4 max-w-[70%] px-4 py-2 rounded-lg text-sm ${
+              msg.from === sender
+                ? 'bg-cyan-500 ml-auto text-black text-right'
+                : 'bg-gray-700 text-white text-left'
             }`}
           >
+            <div className="text-xs opacity-80 mb-1">
+              From: {msg.from} <br />
+              To: {msg.to ?? receiver}
+            </div>
             {msg.message}
           </div>
         ))}

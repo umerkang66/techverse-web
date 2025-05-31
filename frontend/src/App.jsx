@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar.jsx';
 import Hero from './components/Hero.jsx';
@@ -10,6 +11,8 @@ import FoundItem from './pages/FoundItem.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import axios from 'axios';
 import Chat from './pages/Chat.jsx';
+import { socket } from './socket-cn.js';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [_, setIsLoggedIn] = useState(false);
@@ -24,8 +27,13 @@ function App() {
 
       setCurrentUser(response.data.data.user);
     };
-
     fetchUser();
+
+    socket.connect();
+
+    return () => {
+      socket.disconnect();
+    };
   }, []);
 
   const onLogout = async () => {
@@ -38,6 +46,7 @@ function App() {
   return (
     <div className="bg-[#0f0f1a] min-h-screen text-white">
       <>
+        <Toaster />
         <Router>
           <Navbar
             onSignIn={() => setAuthMode('signin')}
@@ -74,7 +83,7 @@ function App() {
               path="/found-items"
               element={<FoundItem currentUser={currentUser} />}
             />
-            <Route path="/chat" element={<Chat />} />
+            <Route path="/chat/:sender/:receiver" element={<Chat />} />
             <Route
               path="/dashboard"
               element={
